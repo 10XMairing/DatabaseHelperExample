@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:background="@drawable/gradient_backgroud"
+    android:gravity="center_horizontal"
+        android:id="@+id/ll">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="25dp"/>
+    <ImageView
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:src="@drawable/ic_extension_black_24dp"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+    <EditText
+        android:id="@+id/etUserName"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:drawableLeft="@drawable/ic_account_circle_black_24dp"
+        android:background="@color/minputBackground"
+        android:textColor="@color/primaryText"
+        android:textColorHint="@color/primaryText"
+        android:ems="10"
+        android:hint="@string/username"
+        android:inputType="textPersonName"
+        android:textSize="16sp"
+        android:textAlignment="textStart"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="25dp"/>
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:drawableLeft="@drawable/ic_lock_black_24dp"
+        android:background="@color/minputBackground"
+        android:ems="10"
+        android:hint="@string/password"
+        android:textColor="@color/primaryText"
+        android:textColorHint="@color/primaryText"
+        android:inputType="textPassword"
+        android:textSize="16sp"
+        android:textAlignment="textStart"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="25dp"/>
+    <android.support.v7.widget.CardView
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        app:cardBackgroundColor="@color/mloginCardBackground"
+        app:cardCornerRadius="25dp"
+        >
+            <TextView
+                android:id="@+id/tvLogin"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Login"
+                android:gravity="center"
+                android:textColor="@color/primaryText"
+                android:textSize="16sp"
+                />
+
+
+
+
+    </android.support.v7.widget.CardView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+    <TextView
+        android:id="@+id/etRegister"
+        android:layout_width="200dp"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Register here."
+        android:textColor="@color/primaryText"
+        />
+
+
+</LinearLayout>
