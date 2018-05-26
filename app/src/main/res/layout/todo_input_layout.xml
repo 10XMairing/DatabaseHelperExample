@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mTaskContainer"
+    android:layout_margin="5dp"
+    app:cardElevation="10dp"
+    android:layout_height="?listPreferredItemHeight">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        >
+        <EditText
+            android:id="@+id/etToDoTask"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:hint="task"
+            android:textSize="13sp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_24dp"
+            />
+        <EditText
+            android:id="@+id/etToDoStartTime"
+            android:layout_width="0dp"
+            android:layout_gravity="center"
+            android:hint="start time"
+            android:textSize="13sp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_arrow_24dp"
+            />
+        <EditText
+            android:id="@+id/etToDoEndTime"
+            android:layout_width="0dp"
+            android:hint="end time"
+            android:textAlignment="center"
+            android:textSize="13sp"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <ImageView
+            android:layout_gravity="center_vertical"
+            android:id="@+id/iAddTask"
+            android:layout_margin="10dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_add_black_24dp"
+
+            />
+
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

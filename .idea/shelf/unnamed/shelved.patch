@@ -1,0 +1,475 @@
+Index: app/src/main/java/code/tenx/projectplanmyday/MainFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package code.tenx.projectplanmyday;\n\nimport android.annotation.SuppressLint;\nimport android.app.AlertDialog;\nimport android.app.Dialog;\nimport android.content.Context;\nimport android.database.Cursor;\nimport android.net.Uri;\nimport android.os.Bundle;\nimport android.support.annotation.NonNull;\nimport android.support.annotation.Nullable;\nimport android.support.v4.app.Fragment;\nimport android.view.LayoutInflater;\nimport android.view.View;\nimport android.view.ViewGroup;\nimport android.widget.AdapterView;\nimport android.widget.CompoundButton;\nimport android.widget.EditText;\nimport android.widget.ImageView;\nimport android.widget.ListView;\nimport android.widget.ProgressBar;\nimport android.widget.TextView;\nimport android.widget.Toast;\nimport android.widget.ToggleButton;\n\nimport java.util.ArrayList;\nimport java.util.List;\nimport java.util.Objects;\n\n\npublic class MainFragment extends Fragment {\n\n    private static List<String> goals_list;\n    GoalsAdapter goalsAdapter;\n    ListView listView;\n    ImageView image1,image2,image3,image4, iAdd,iDelete;\n    ToggleButton toggleButton;\n    TextView ivGoalsHeader;\n    EditText inputGoal,editGoal;\n    DatabaseHelper myDb;\n\n    @Override\n    public void onCreate(@Nullable Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n\n    }\n\n    @Override\n    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,\n                             Bundle savedInstanceState) {\n        // Inflate the layout for this fragment\n        View view = inflater.inflate(R.layout.main_fragment, container, false);\n\n        ImageView image1 = view.findViewById(R.id.image1);\n        listView = view.findViewById(R.id.listGolas);\n        image1 = view.findViewById(R.id.image1);\n        image2 = view.findViewById(R.id.image2);\n        image3 = view.findViewById(R.id.image3);\n        image4 = view.findViewById(R.id.image4);\n        ivGoalsHeader = view.findViewById(R.id.tvGoalsHeader);\n        myDb = new DatabaseHelper(getActivity());\n        goals_list = new ArrayList<>();\n        goalsAdapter = new GoalsAdapter(Objects.requireNonNull(getActivity()), goals_list);\n        listView.setAdapter(goalsAdapter);\n        readGoalsData();\n\n        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {\n            @Override\n            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {\n                final String currentGoal = goals_list.get(position);\n                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(Objects.requireNonNull(getActivity()));\n                @SuppressLint(\"InflateParams\") View inputView = LayoutInflater.from(getActivity()).inflate(R.layout.goal_edit_delete_field, null);\n                editGoal = inputView.findViewById(R.id.etGoalEdit);\n                editGoal.setEnabled(false);\n                editGoal.setText(currentGoal);\n                iDelete = inputView.findViewById(R.id.iDelete);\n                toggleButton = inputView.findViewById(R.id.toggleButton);\n                builder.setView(inputView);\n                builder.setCancelable(true);\n                final android.support.v7.app.AlertDialog dialog = builder.create();\n                dialog.show();\n                iDelete.setOnClickListener(new View.OnClickListener() {\n                    @Override\n                    public void onClick(View v) {\n                        deleteData(currentGoal);\n\n                        dialog.dismiss();\n                    }\n                });\n\n                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {\n                    @Override\n                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {\n                        if(isChecked){\n                            editGoal.setEnabled(true);\n                            toggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_check_black_24dp));\n                        }else{\n                            String text = editGoal.getText().toString();\n                            updateData(currentGoal, text);\n                            editGoal.setEnabled(false);\n                            toggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));\n                            dialog.dismiss();\n                        }\n                    }\n                });\n                return true;\n            }\n        });\n\n\n\n        image1.setOnClickListener(new View.OnClickListener() {\n            @Override\n            public void onClick(View v) {\n                goalsInput();\n            }\n        });\n\n\n        return view;\n    }\n\n\n    public void goalsInput(){\n        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(Objects.requireNonNull(getActivity()));\n        @SuppressLint(\"InflateParams\") View inputView = LayoutInflater.from(getActivity()).inflate(R.layout.goal_input_layout, null);\n        inputGoal = inputView.findViewById(R.id.etGoalInput);\n        iAdd = inputView.findViewById(R.id.iAdd);\n        builder.setView(inputView);\n        builder.setCancelable(true);\n        final android.support.v7.app.AlertDialog dialog = builder.create();\n        dialog.show();\n        iAdd.setOnClickListener(new View.OnClickListener() {\n            @Override\n            public void onClick(View v) {\n                String goal = inputGoal.getText().toString();\n                if(goal.equals(\"\")){\n                    return;\n                }\n                myDb.addGoals(goal);\n                goals_list.add(goal);\n                goalsAdapter.notifyDataSetChanged();\n                dialog.dismiss();\n                Toast.makeText(getActivity(), \"Added your Goal!\", Toast.LENGTH_SHORT).show();\n            }\n        });\n\n    }\n\n    public void readGoalsData(){\n        Cursor res = myDb.getData();\n        if(res == null){\n            return;\n        }\n\n        while(res.moveToNext()){\n            String currentGoal = res.getString(1);\n            goals_list.add(currentGoal);\n        }\n        goalsAdapter.notifyDataSetChanged();\n    }\n\n    public void updateData(String text, String newGoal){\n\n        myDb.updateGoals(text, newGoal);\n        int i = goals_list.indexOf(text);\n        goals_list.set(i, newGoal);\n        goalsAdapter.notifyDataSetChanged();\n\n    }\n\n    public void deleteData(String text){\n        myDb.deleteData(text);\n        goals_list.remove(text);\n        goalsAdapter.notifyDataSetChanged();\n\n    }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/code/tenx/projectplanmyday/MainFragment.java	(date 1527313392000)
++++ app/src/main/java/code/tenx/projectplanmyday/MainFragment.java	(date 1527335602004)
+@@ -9,8 +9,10 @@
+ import android.os.Bundle;
+ import android.support.annotation.NonNull;
+ import android.support.annotation.Nullable;
++import android.support.design.widget.FloatingActionButton;
+ import android.support.v4.app.Fragment;
+ import android.view.LayoutInflater;
++import android.view.MenuItem;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.AdapterView;
+@@ -18,6 +20,7 @@
+ import android.widget.EditText;
+ import android.widget.ImageView;
+ import android.widget.ListView;
++import android.widget.PopupMenu;
+ import android.widget.ProgressBar;
+ import android.widget.TextView;
+ import android.widget.Toast;
+@@ -30,14 +33,15 @@
+ 
+ public class MainFragment extends Fragment {
+ 
+-    private static List<String> goals_list;
++    public static List<String> goals_list;
+     GoalsAdapter goalsAdapter;
+     ListView listView;
+     ImageView image1,image2,image3,image4, iAdd,iDelete;
+     ToggleButton toggleButton;
+     TextView ivGoalsHeader;
++    FloatingActionButton fab;
+     EditText inputGoal,editGoal;
+-    DatabaseHelper myDb;
++    public  DatabaseHelper myDb;
+ 
+     @Override
+     public void onCreate(@Nullable Bundle savedInstanceState) {
+@@ -51,12 +55,13 @@
+         // Inflate the layout for this fragment
+         View view = inflater.inflate(R.layout.main_fragment, container, false);
+ 
+-        ImageView image1 = view.findViewById(R.id.image1);
++
+         listView = view.findViewById(R.id.listGolas);
+         image1 = view.findViewById(R.id.image1);
+         image2 = view.findViewById(R.id.image2);
+         image3 = view.findViewById(R.id.image3);
+         image4 = view.findViewById(R.id.image4);
++        fab = view.findViewById(R.id.fab);
+         ivGoalsHeader = view.findViewById(R.id.tvGoalsHeader);
+         myDb = new DatabaseHelper(getActivity());
+         goals_list = new ArrayList<>();
+@@ -117,6 +122,46 @@
+         });
+ 
+ 
++        fab.setOnClickListener(new View.OnClickListener() {
++            @Override
++            public void onClick(View view) {
++
++                Toast.makeText(getActivity(), "Floating button clicked", Toast.LENGTH_SHORT).show();
++                final PopupMenu pop = new PopupMenu(getActivity() , fab);
++                pop.getMenuInflater().inflate(R.menu.float_menu, pop.getMenu());
++                pop.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
++                    @Override
++                    public boolean onMenuItemClick(MenuItem item) {
++                        switch (item.getItemId()) {
++                            case R.id.menuAddGoals:
++                                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity());
++                                View view = LayoutInflater.from(getActivity()).inflate(R.layout.goal_input_layout, null);
++                                builder.setView(view);
++                                final android.support.v7.app.AlertDialog dialog = builder.create();
++                                dialog.show();
++                                final EditText inputGoal = view.findViewById(R.id.etGoalInput);
++                                ImageView iAdd = view.findViewById(R.id.iAdd);
++                                iAdd.setOnClickListener(new View.OnClickListener() {
++                                    @Override
++                                    public void onClick(View v) {
++                                        Toast.makeText(getActivity(), "Clicked add", Toast.LENGTH_SHORT).show();
++                                        String string = inputGoal.getText().toString();
++                                        MainFragment.goals_list.add(string);
++                                        myDb.addGoals(string);
++                                        goalsAdapter.notifyDataSetChanged();
++                                        dialog.dismiss();
++                                    }
++                                });
++                                break;
++                        }
++                        return true;
++                    }
++                });
++                pop.show();
++            }
++        });
++
++
+         return view;
+     }
+ 
+@@ -175,6 +220,4 @@
+         goalsAdapter.notifyDataSetChanged();
+ 
+     }
+-
+-
+ }
+Index: app/src/main/java/code/tenx/projectplanmyday/Navigation_Activity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package code.tenx.projectplanmyday;\n\nimport android.app.Fragment;\nimport android.app.FragmentTransaction;\nimport android.database.Cursor;\nimport android.net.Uri;\nimport android.os.Bundle;\nimport android.support.design.widget.FloatingActionButton;\nimport android.support.design.widget.Snackbar;\nimport android.support.v7.app.AlertDialog;\nimport android.view.LayoutInflater;\nimport android.view.View;\nimport android.support.design.widget.NavigationView;\nimport android.support.v4.view.GravityCompat;\nimport android.support.v4.widget.DrawerLayout;\nimport android.support.v7.app.ActionBarDrawerToggle;\nimport android.support.v7.app.AppCompatActivity;\nimport android.support.v7.widget.Toolbar;\nimport android.view.Menu;\nimport android.view.MenuItem;\nimport android.widget.AdapterView;\nimport android.widget.CompoundButton;\nimport android.widget.EditText;\nimport android.widget.ImageView;\nimport android.widget.ListView;\nimport android.widget.TextView;\nimport android.widget.Toast;\nimport android.widget.ToggleButton;\n\nimport java.util.ArrayList;\nimport java.util.List;\n\npublic class Navigation_Activity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{\n\n    NavigationView navigationView = null;\n    Toolbar toolbar = null;\n\n\n    @Override\n    protected void onCreate(Bundle savedInstanceState) {\n        super.onCreate(savedInstanceState);\n        setContentView(R.layout.activity_navigation_);\n        toolbar = (Toolbar) findViewById(R.id.toolbar);\n        setSupportActionBar(toolbar);\n\n\n\n\n\n\n\n\n        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);\n        fab.setOnClickListener(new View.OnClickListener() {\n            @Override\n            public void onClick(View view) {\n                Snackbar.make(view, \"Replace with your own action\", Snackbar.LENGTH_LONG)\n                        .setAction(\"Action\", null).show();\n            }\n        });\n\n        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);\n        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(\n                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);\n        drawer.addDrawerListener(toggle);\n        toggle.syncState();\n\n        navigationView = (NavigationView) findViewById(R.id.nav_view);\n        navigationView.setNavigationItemSelectedListener(this);\n        android.support.v4.app.Fragment mainFrag = new MainFragment();\n        android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();\n        ft.replace(R.id.mainContainer, mainFrag);\n        ft.commit();\n    }\n\n    @Override\n    public void onBackPressed() {\n        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);\n        if (drawer.isDrawerOpen(GravityCompat.START)) {\n            drawer.closeDrawer(GravityCompat.START);\n        } else {\n            super.onBackPressed();\n        }\n    }\n\n    @Override\n    public boolean onCreateOptionsMenu(Menu menu) {\n        // Inflate the menu; this adds items to the action bar if it is present.\n        getMenuInflater().inflate(R.menu.navigation_, menu);\n        return true;\n    }\n\n    @Override\n    public boolean onOptionsItemSelected(MenuItem item) {\n        // Handle action bar item clicks here. The action bar will\n        // automatically handle clicks on the Home/Up button, so long\n        // as you specify a parent activity in AndroidManifest.xml.\n        int id = item.getItemId();\n\n        //noinspection SimplifiableIfStatement\n        if (id == R.id.action_settings) {\n            return true;\n        }\n\n        return super.onOptionsItemSelected(item);\n    }\n\n    @SuppressWarnings(\"StatementWithEmptyBody\")\n    @Override\n    public boolean onNavigationItemSelected(MenuItem item) {\n        // Handle navigation view item clicks here.\n        int id = item.getItemId();\n        android.support.v4.app.Fragment fragment = null;\n\n        if (id == R.id.nav_ToDo) {\n            fragment = new ToDoFragment();\n        } else if (id == R.id.nav_Goals) {\n            fragment = new MainFragment();\n        } else if (id == R.id.nav_Redcards) {\n            Toast.makeText(getApplicationContext(), \"Red Cards clicked\", Toast.LENGTH_SHORT).show();\n        } else if (id == R.id.nav_reminders) {\n            Toast.makeText(getApplicationContext(), \"reminders clicked\", Toast.LENGTH_SHORT).show();\n        } else if (id == R.id.nav_share) {\n            Toast.makeText(getApplicationContext(), \"Share clicked\", Toast.LENGTH_SHORT).show();\n        } else if (id == R.id.nav_send) {\n            Toast.makeText(getApplicationContext(), \"send clicked\", Toast.LENGTH_SHORT).show();\n        }\n\n        if(fragment!=null){\n            android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();\n            ft.replace(R.id.mainContainer, fragment);\n            ft.commit();\n        }\n\n        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);\n        drawer.closeDrawer(GravityCompat.START);\n        return true;\n    }\n\n\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/code/tenx/projectplanmyday/Navigation_Activity.java	(date 1527313392000)
++++ app/src/main/java/code/tenx/projectplanmyday/Navigation_Activity.java	(date 1527335475074)
+@@ -1,13 +1,19 @@
+ package code.tenx.projectplanmyday;
+ 
++import android.annotation.SuppressLint;
++import android.app.Activity;
++import android.app.Dialog;
+ import android.app.Fragment;
++import android.app.FragmentManager;
+ import android.app.FragmentTransaction;
+ import android.database.Cursor;
+ import android.net.Uri;
+ import android.os.Bundle;
+ import android.support.design.widget.FloatingActionButton;
+ import android.support.design.widget.Snackbar;
++import android.support.v4.app.FragmentActivity;
+ import android.support.v7.app.AlertDialog;
++import android.text.Layout;
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.support.design.widget.NavigationView;
+@@ -23,14 +29,16 @@
+ import android.widget.EditText;
+ import android.widget.ImageView;
+ import android.widget.ListView;
++import android.widget.PopupMenu;
+ import android.widget.TextView;
+ import android.widget.Toast;
+ import android.widget.ToggleButton;
+ 
+ import java.util.ArrayList;
+ import java.util.List;
++import java.util.Objects;
+ 
+-public class Navigation_Activity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
++public class Navigation_Activity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener{
+ 
+     NavigationView navigationView = null;
+     Toolbar toolbar = null;
+@@ -38,26 +46,9 @@
+ 
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
++        setTheme(R.style.AppTheme);
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_navigation_);
+-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+-        setSupportActionBar(toolbar);
+-
+-
+-
+-
+-
+-
+-
+-
+-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+-        fab.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View view) {
+-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+-                        .setAction("Action", null).show();
+-            }
+-        });
+ 
+         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+@@ -99,6 +90,7 @@
+ 
+         //noinspection SimplifiableIfStatement
+         if (id == R.id.action_settings) {
++            Toast.makeText(this, "Options Clicked!", Toast.LENGTH_SHORT).show();
+             return true;
+         }
+ 
+Index: app/src/main/java/code/tenx/projectplanmyday/SecondActivity.java
+===================================================================
+--- app/src/main/java/code/tenx/projectplanmyday/SecondActivity.java	(date 1527313392000)
++++ app/src/main/java/code/tenx/projectplanmyday/SecondActivity.java	(date 1527313392000)
+@@ -1,159 +0,0 @@
+-package code.tenx.projectplanmyday;
+-
+-import android.database.Cursor;
+-import android.support.v7.app.AlertDialog;
+-import android.support.v7.app.AppCompatActivity;
+-import android.os.Bundle;
+-import android.view.LayoutInflater;
+-import android.view.View;
+-import android.widget.AdapterView;
+-import android.widget.CompoundButton;
+-import android.widget.EditText;
+-import android.widget.ImageView;
+-import android.widget.ListView;
+-import android.widget.TextView;
+-import android.widget.Toast;
+-import android.widget.ToggleButton;
+-
+-import java.util.ArrayList;
+-import java.util.List;
+-
+-public class SecondActivity extends AppCompatActivity{
+-
+-    private static List<String> goals_list;
+-    GoalsAdapter goalsAdapter;
+-    ListView listView;
+-    ImageView image1,image2,image3,image4, iAdd,iDelete;
+-    ToggleButton toggleButton;
+-    TextView ivGoalsHeader;
+-    EditText inputGoal,editGoal;
+-    DatabaseHelper myDb;
+-
+-    @Override
+-    protected void onCreate(Bundle savedInstanceState) {
+-        super.onCreate(savedInstanceState);
+-        setContentView(R.layout.main_fragment);
+-
+-        listView = findViewById(R.id.listGolas);
+-        image1 = findViewById(R.id.image1);
+-        image2 = findViewById(R.id.image2);
+-        image3 = findViewById(R.id.image3);
+-        image4 = findViewById(R.id.image4);
+-        ivGoalsHeader = findViewById(R.id.tvGoalsHeader);
+-
+-        myDb = new DatabaseHelper(this);
+-        goals_list = new ArrayList<>();
+-        goalsAdapter = new GoalsAdapter(this, goals_list);
+-        listView.setAdapter(goalsAdapter);
+-        readGoalsData();
+-
+-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+-            @Override
+-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+-                final String currentGoal = goals_list.get(position);
+-                AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
+-                View inputView = LayoutInflater.from(SecondActivity.this).inflate(R.layout.goal_edit_delete_field, null);
+-                editGoal = inputView.findViewById(R.id.etGoalEdit);
+-                editGoal.setEnabled(false);
+-                editGoal.setText(currentGoal);
+-                iDelete = inputView.findViewById(R.id.iDelete);
+-                toggleButton = inputView.findViewById(R.id.toggleButton);
+-                builder.setView(inputView);
+-                builder.setCancelable(true);
+-                final AlertDialog dialog = builder.create();
+-                dialog.show();
+-                iDelete.setOnClickListener(new View.OnClickListener() {
+-                    @Override
+-                    public void onClick(View v) {
+-                        deleteData(currentGoal);
+-
+-                        dialog.dismiss();
+-                    }
+-                });
+-
+-                toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+-                    @Override
+-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+-                        if(isChecked){
+-                            editGoal.setEnabled(true);
+-                            toggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_check_black_24dp));
+-                        }else{
+-                            String text = editGoal.getText().toString();
+-                            updateData(currentGoal, text);
+-                            editGoal.setEnabled(false);
+-                            toggleButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_edit_black_24dp));
+-                            dialog.dismiss();
+-                        }
+-                    }
+-                });
+-                return true;
+-            }
+-        });
+-
+-
+-
+-        image1.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                goalsInput();
+-            }
+-        });
+-
+-    }
+-
+-    public void goalsInput(){
+-        AlertDialog.Builder builder = new AlertDialog.Builder(SecondActivity.this);
+-        View inputView = LayoutInflater.from(SecondActivity.this).inflate(R.layout.goal_input_layout, null);
+-        inputGoal = inputView.findViewById(R.id.etGoalInput);
+-        iAdd = inputView.findViewById(R.id.iAdd);
+-        builder.setView(inputView);
+-        builder.setCancelable(true);
+-        final AlertDialog dialog = builder.create();
+-        dialog.show();
+-        iAdd.setOnClickListener(new View.OnClickListener() {
+-            @Override
+-            public void onClick(View v) {
+-                String goal = inputGoal.getText().toString();
+-                if(goal.equals("")){
+-                    return;
+-                }
+-                myDb.addGoals(goal);
+-                goals_list.add(goal);
+-                goalsAdapter.notifyDataSetChanged();
+-                dialog.dismiss();
+-                Toast.makeText(SecondActivity.this, "Added your Goal!", Toast.LENGTH_SHORT).show();
+-            }
+-        });
+-
+-    }
+-
+-    public void readGoalsData(){
+-        Cursor res = myDb.getData();
+-        if(res == null){
+-            return;
+-        }
+-
+-        while(res.moveToNext()){
+-            String currentGoal = res.getString(1);
+-            goals_list.add(currentGoal);
+-        }
+-        goalsAdapter.notifyDataSetChanged();
+-    }
+-
+-    public void updateData(String text, String newGoal){
+-
+-        myDb.updateGoals(text, newGoal);
+-        int i = goals_list.indexOf(text);
+-        goals_list.set(i, newGoal);
+-        goalsAdapter.notifyDataSetChanged();
+-
+-    }
+-
+-    public void deleteData(String text){
+-        myDb.deleteData(text);
+-        goals_list.remove(text);
+-        goalsAdapter.notifyDataSetChanged();
+-
+-    }
+-
+-}
+Index: app/src/main/res/layout/app_bar_navigation_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n<android.support.design.widget.CoordinatorLayout\n    xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    tools:context=\".Navigation_Activity\">\n\n   <LinearLayout\n       android:layout_width=\"match_parent\"\n       android:layout_height=\"match_parent\"\n       android:orientation=\"vertical\"\n       >\n       <android.support.design.widget.AppBarLayout\n           android:layout_width=\"match_parent\"\n           android:layout_height=\"wrap_content\"\n           android:theme=\"@style/AppTheme.AppBarOverlay\">\n\n           <android.support.v7.widget.Toolbar\n               android:id=\"@+id/toolbar\"\n               android:layout_width=\"match_parent\"\n               android:layout_height=\"?attr/actionBarSize\"\n               android:background=\"?attr/colorPrimary\"\n               app:popupTheme=\"@style/AppTheme.PopupOverlay\" />\n\n       </android.support.design.widget.AppBarLayout>\n\n       <include layout=\"@layout/content_nav_frag_container\" />\n\n\n   </LinearLayout>\n    <android.support.design.widget.FloatingActionButton\n        android:id=\"@+id/fab\"\n        android:layout_width=\"wrap_content\"\n        android:layout_height=\"wrap_content\"\n        android:layout_gravity=\"bottom|end\"\n        android:layout_margin=\"@dimen/fab_margin\"\n        app:srcCompat=\"@android:drawable/ic_dialog_email\" />\n\n\n</android.support.design.widget.CoordinatorLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/app_bar_navigation_.xml	(date 1527313392000)
++++ app/src/main/res/layout/app_bar_navigation_.xml	(date 1527335095990)
+@@ -31,13 +31,5 @@
+ 
+ 
+    </LinearLayout>
+-    <android.support.design.widget.FloatingActionButton
+-        android:id="@+id/fab"
+-        android:layout_width="wrap_content"
+-        android:layout_height="wrap_content"
+-        android:layout_gravity="bottom|end"
+-        android:layout_margin="@dimen/fab_margin"
+-        app:srcCompat="@android:drawable/ic_dialog_email" />
+-
+ 
+ </android.support.design.widget.CoordinatorLayout>
+\ No newline at end of file
+Index: app/src/main/res/layout/main_fragment.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n\n\n\n\n\n<LinearLayout xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:tools=\"http://schemas.android.com/tools\"\n    android:layout_width=\"match_parent\"\n    android:layout_height=\"match_parent\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\"\n    android:orientation=\"vertical\"\n    android:background=\"@drawable/gradient_backgroud\">\n\n\n\n\n    <View\n        android:layout_width=\"match_parent\"\n        android:layout_height=\"20dp\"/>\n    <android.support.v7.widget.CardView\n        android:layout_width=\"match_parent\"\n        android:layout_weight=\"1\"\n        android:layout_height=\"0dp\"\n        app:cardCornerRadius=\"25dp\"\n        android:layout_margin=\"10dp\">\n        <LinearLayout\n            android:layout_width=\"match_parent\"\n            android:layout_height=\"match_parent\"\n            android:orientation=\"vertical\"\n            >\n            <LinearLayout\n                android:layout_width=\"match_parent\"\n                android:layout_height=\"0dp\"\n                android:orientation=\"horizontal\"\n                android:layout_margin=\"10dp\"\n                android:layout_weight=\"1\">\n                <LinearLayout\n                    android:layout_width=\"0dp\"\n                    android:layout_height=\"match_parent\"\n                    android:layout_weight=\"1\"\n                    android:orientation=\"vertical\"\n                    android:gravity=\"center_horizontal\"\n\n                    >\n                    <ImageView\n                        android:id=\"@+id/image1\"\n\n                        android:layout_width=\"50dp\"\n                        android:background=\"@drawable/circle_background\"\n                        android:layout_height=\"50dp\" />\n                    <TextView\n                        android:layout_width=\"wrap_content\"\n                        android:layout_height=\"20dp\"\n                        android:text=\"@string/Action1\"\n                        android:gravity=\"center\"\n                        android:textSize=\"12sp\"\n                        android:layout_marginBottom=\"10dp\"\n                        />\n                    <ImageView\n                        android:id=\"@+id/image2\"\n                        android:background=\"@drawable/circle_background\"\n                        android:layout_width=\"50dp\"\n                        android:layout_height=\"50dp\" />\n                    <TextView\n                        android:layout_width=\"wrap_content\"\n                        android:layout_height=\"20dp\"\n\n                       android:text=\"@string/Action2\"\n                        android:gravity=\"center\"\n                        android:textSize=\"12sp\"\n                        />\n\n\n\n                </LinearLayout>\n                <LinearLayout\n                    android:layout_width=\"0dp\"\n                    android:layout_height=\"match_parent\"\n                    android:layout_weight=\"1\"\n                    android:orientation=\"vertical\"\n                    android:gravity=\"center_horizontal\"\n\n                    >\n                    <ImageView\n                        android:id=\"@+id/image3\"\n                        android:layout_width=\"50dp\"\n                        android:background=\"@drawable/circle_background\"\n                        android:layout_height=\"50dp\" />\n                    <TextView\n                        android:layout_width=\"wrap_content\"\n                        android:layout_height=\"20dp\"\n\n                        android:text=\"@string/Action3\"\n                        android:ems=\"20\"\n                        android:gravity=\"center\"\n                        android:textSize=\"12sp\"\n                        android:layout_marginBottom=\"10dp\"\n                        />\n                    <ImageView\n                        android:id=\"@+id/image4\"\n                        android:background=\"@drawable/circle_background\"\n                        android:layout_width=\"50dp\"\n                        android:layout_height=\"50dp\" />\n                    <TextView\n                        android:layout_width=\"wrap_content\"\n                        android:layout_height=\"20dp\"\n                        android:text=\"@string/Action4\"\n                        android:gravity=\"center\"\n                        android:textSize=\"12sp\"\n                        />\n\n\n\n                </LinearLayout>\n\n            </LinearLayout>\n            <LinearLayout\n                android:layout_width=\"match_parent\"\n                android:layout_height=\"0dp\"\n                android:orientation=\"vertical\"\n                android:layout_weight=\"2\">\n                <TextView\n                    android:id=\"@+id/tvGoalsHeader\"\n                    android:layout_width=\"match_parent\"\n                    android:layout_height=\"50dp\"\n                    android:text=\"My Goals for the Day!\"\n                    android:textSize=\"20sp\"\n                    android:gravity=\"center\"\n                    />\n                <ListView\n                    android:id=\"@+id/listGolas\"\n                    android:layout_width=\"match_parent\"\n                    android:layout_height=\"match_parent\"\n                    android:layout_gravity=\"center_horizontal\"\n                    >\n                    \n                </ListView>\n\n            </LinearLayout>\n\n\n        </LinearLayout>\n\n    </android.support.v7.widget.CardView>\n\n\n\n\n\n</LinearLayout>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/main_fragment.xml	(date 1527313392000)
++++ app/src/main/res/layout/main_fragment.xml	(date 1527335095877)
+@@ -141,6 +141,13 @@
+ 
+ 
+         </LinearLayout>
++        <android.support.design.widget.FloatingActionButton
++            android:id="@+id/fab"
++            android:layout_width="wrap_content"
++            android:layout_height="wrap_content"
++            android:layout_gravity="bottom|end"
++            android:layout_margin="@dimen/fab_margin"
++            app:srcCompat="@android:drawable/ic_input_add" />
+ 
+     </android.support.v7.widget.CardView>
+ 
+@@ -148,4 +155,5 @@
+ 
+ 
+ 
++
+ </LinearLayout>
+\ No newline at end of file
+Index: app/src/main/res/menu/navigation_.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<menu xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    xmlns:app=\"http://schemas.android.com/apk/res-auto\">\n    <item\n        android:id=\"@+id/action_settings\"\n        android:orderInCategory=\"100\"\n        android:title=\"@string/action_settings\"\n        app:showAsAction=\"never\" />\n</menu>\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/navigation_.xml	(date 1527313392000)
++++ app/src/main/res/menu/navigation_.xml	(date 1527315731556)
+@@ -6,4 +6,5 @@
+         android:orderInCategory="100"
+         android:title="@string/action_settings"
+         app:showAsAction="never" />
++
+ </menu>
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"utf-8\"?>\n<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\"\n    package=\"code.tenx.projectplanmyday\">\n\n    <application\n        android:allowBackup=\"true\"\n        android:icon=\"@mipmap/ic_launcher\"\n        android:label=\"@string/app_name\"\n        android:roundIcon=\"@mipmap/ic_launcher_round\"\n        android:supportsRtl=\"true\"\n        android:theme=\"@style/AppTheme\">\n        <activity android:name=\".MainActivity\">\n            <intent-filter>\n                <action android:name=\"android.intent.action.MAIN\" />\n\n                <category android:name=\"android.intent.category.LAUNCHER\" />\n            </intent-filter>\n        </activity>\n        <activity android:name=\".SecondActivity\" />\n        <activity\n            android:name=\".Navigation_Activity\"\n            android:label=\"@string/title_activity_navigation_\"\n            android:theme=\"@style/AppTheme.NoActionBar\"></activity>\n    </application>\n\n</manifest>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(date 1527313392000)
++++ app/src/main/AndroidManifest.xml	(date 1527326881352)
+@@ -16,11 +16,12 @@
+                 <category android:name="android.intent.category.LAUNCHER" />
+             </intent-filter>
+         </activity>
+-        <activity android:name=".SecondActivity" />
+         <activity
+             android:name=".Navigation_Activity"
+             android:label="@string/title_activity_navigation_"
+-            android:theme="@style/AppTheme.NoActionBar"></activity>
++            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
++
++        </activity>
+     </application>
+ 
+ </manifest>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"VcsDirectoryMappings\">\n    <mapping directory=\"$PROJECT_DIR$/app/src/main/res/menu\" vcs=\"Git\" />\n    <mapping directory=\"D:/git\" vcs=\"Git\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/vcs.xml	(date 1527313392000)
++++ .idea/vcs.xml	(date 1527324475227)
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$/app/src/main/res/menu" vcs="Git" />
+-    <mapping directory="D:/git" vcs="Git" />
++    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file

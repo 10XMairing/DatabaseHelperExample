@@ -2,13 +2,11 @@ package code.tenx.projectplanmyday;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +16,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -46,12 +43,12 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.main_fragment, container, false);
 
-        ImageView image1 = view.findViewById(R.id.image1);
+        FloatingActionButton fab = view.findViewById(R.id.fabHome);
         listView = view.findViewById(R.id.listGolas);
         image1 = view.findViewById(R.id.image1);
         image2 = view.findViewById(R.id.image2);
@@ -63,6 +60,31 @@ public class MainFragment extends Fragment {
         goalsAdapter = new GoalsAdapter(Objects.requireNonNull(getActivity()), goals_list);
         listView.setAdapter(goalsAdapter);
         readGoalsData();
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                View inputView = LayoutInflater.from(getActivity()).inflate(R.layout.goal_input_layout, null);
+                builder.setView(inputView);
+                builder.setTitle("Add Goals!");
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+                final EditText input = inputView.findViewById(R.id.etGoalInput);
+                ImageView btn = inputView.findViewById(R.id.iAdd);
+                btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String text = input.getText().toString();
+                        goals_list.add(text);
+                        myDb.addGoals(text);
+                        goalsAdapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
+
+            }
+        });
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -109,6 +131,9 @@ public class MainFragment extends Fragment {
 
 
 
+
+
+
         image1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,7 +173,7 @@ public class MainFragment extends Fragment {
     }
 
     public void readGoalsData(){
-        Cursor res = myDb.getData();
+        Cursor res = myDb.getGoalsData();
         if(res == null){
             return;
         }
@@ -170,7 +195,7 @@ public class MainFragment extends Fragment {
     }
 
     public void deleteData(String text){
-        myDb.deleteData(text);
+        myDb.deleteGoalsData(text);
         goals_list.remove(text);
         goalsAdapter.notifyDataSetChanged();
 
