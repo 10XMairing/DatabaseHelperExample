@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/gradient_backgroud">
+
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        app:cardCornerRadius="25dp"
+        android:layout_margin="10dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:orientation="vertical"
+                android:layout_weight="2">
+                <TextView
+                    android:id="@+id/tvGoalsHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="My Goals for the Day!"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerviewGoals"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                </android.support.v7.widget.RecyclerView>
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabHome"
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/ic_add_black_24dp"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabhomeDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="5dp"
+            android:src="@drawable/ic_fab_delete_all_24dp" />
+
+    </android.support.v7.widget.CardView>
+
+
+
+
+
+</LinearLayout>

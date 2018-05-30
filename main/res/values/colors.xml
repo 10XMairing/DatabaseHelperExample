@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <color name="colorPrimary">#130924</color>
+        <color name="colorPrimaryDark">#07030C</color>
+        <color name="backgroundcolor">#fcfcfc</color>
+        <color name="colorAccent">#FF4081</color>
+        <color name="primaryText">#ADBAAC</color>
+
+
+        <color name="mcolorBackground">#221041</color>
+        <color name="miconColor">#F9F871</color>
+        <color name="minputBackground">#431F80</color>
+        <color name="mloginCardBackground">#B0425B</color>
+        <color name="ncard1">#FFE66D</color>
+        <color name="ncard2">#CC8B86</color>
+        <color name="ncard3">#048A81</color>
+
+
+
+
+</resources>
